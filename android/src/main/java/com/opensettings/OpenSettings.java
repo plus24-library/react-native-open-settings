@@ -26,14 +26,26 @@ public class OpenSettings extends ReactContextBaseJavaModule {
     //region React Native Methods
     @ReactMethod
     public void openSettings() {
-        final Intent i = new Intent();
-        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        i.addCategory(Intent.CATEGORY_DEFAULT);
-        i.setData(Uri.parse("package:" + reactContext.getPackageName()));
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        reactContext.startActivity(i);
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //above android 8.0 jump to notification channels
+        if (Build.VERSION.SDK_INT >= 26) {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("android.provider.extra.APP_PACKAGE", reactContext.getPackageName());
+        }
+        //android 5.0-7.0 notification settings
+        if (Build.VERSION.SDK_INT >= 21 && Build.VERSION.SDK_INT < 26) {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", reactContext.getPackageName());
+            intent.putExtra("app_uid", reactContext.getApplicationInfo().uid);
+        }
+        //others
+        if (Build.VERSION.SDK_INT < 21) {
+            intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+            intent.setData(Uri.fromParts("package", reactContext.getPackageName(), null));
+        }
+        reactContext.startActivity(intent);
+
     }
     //endregion
 }
