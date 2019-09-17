@@ -7,7 +7,9 @@ Open your apps settings in the Settings app :P
 
 ## Install
 ```
-npm install react-native-open-settings
+npm install https://github.com/plus24-library/react-native-open-settings --saave
+
+react-native link react-native-open-settings
 ```
 
 ### iOS
